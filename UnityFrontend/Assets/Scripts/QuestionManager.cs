@@ -7,22 +7,45 @@ using TMPro;
 public class QuestionManager : MonoBehaviour
 {
     [SerializeField] private TMP_Text questionText;
+    [SerializeField] private GameObject answerButtonsGameObject;
     [SerializeField] private VerticalLayoutGroup answerButtonsGroup;
     [SerializeField] private GameObject answerButtonPrefab;
+    [SerializeField] private Animator animator;
 
     private void OnValidate()
     {
         if (questionText == null)
             Debug.LogError("questionText cannot be null");
+        if (answerButtonsGameObject == null)
+            Debug.LogError("answerButtonsGameObject cannot be null");
         if (answerButtonsGroup == null)
             Debug.LogError("answerButtonsGroup cannot be null");
         if (answerButtonPrefab == null)
             Debug.LogError("answerButtonPrefab cannot be null");
+        if (animator == null)
+            Debug.LogError("animator cannot be null");
     }
 
     private void setQuestion(string question)
     {
-        questionText.text = question;
+        if (question != null)
+        {
+            Debug.Log($"Setting question: {question}");
+            answerButtonsGameObject.SetActive(true);
+            questionText.text = question;
+            animator.Play("Fade-in");
+        }
+        else
+        {
+            setThankYouPanel();
+        }
+    }
+
+    private void setThankYouPanel()
+    {
+        answerButtonsGameObject.SetActive(false);
+        questionText.text = "Thank you!";
+        animator.Play("Fade-in");
     }
 
     private void cleanAnswers()
@@ -47,11 +70,28 @@ public class QuestionManager : MonoBehaviour
     public void AnswerPositive()
     {
         Debug.Log("Positive answer");
+        animator.Play("Fade-out");
+        StartCoroutine(SetNextQuestion());
     }
 
     public void AnswerNagative()
     {
         Debug.Log("Negative answer");
+        animator.Play("Fade-out");
+        StartCoroutine(SetNextQuestion());
+    }
+
+    private int testSetNextQuestionCounter = 0;
+
+    public IEnumerator SetNextQuestion()
+    {
+        Debug.Log("SetNewQuestion");
+        // wait for the animation to finish
+        yield return new WaitForSeconds(0.3f);
+
+        var question = testSetNextQuestionCounter < 3 ? $"Next Question {testSetNextQuestionCounter}" : null;
+        testSetNextQuestionCounter += 1;
+        setQuestion(question);
     }
 
     public void TestSetAnswers()
@@ -63,8 +103,16 @@ public class QuestionManager : MonoBehaviour
         setAnswers(testAnswers);
     }
 
+    private int testSetQuestionCounter = 0;
+
     public void TestSetQuestion()
     {
-        setQuestion("This is a test question.");
+        setQuestion(testSetQuestionCounter < 3 ? $"This is a test question {testSetQuestionCounter}." : null);
+        testSetQuestionCounter += 1;
+    }
+
+    public void TestNoMoreQuestions()
+    {
+        setQuestion(null);
     }
 }
