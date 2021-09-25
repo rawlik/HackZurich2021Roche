@@ -44,12 +44,17 @@ public class QuestionManager : MonoBehaviour
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void TestSetAnswers()
     {
         List<string> testAnswers = new List<string>();
         testAnswers.Add("testAnswer1");
         testAnswers.Add("testAnswer2");
+        testAnswers.Add("testAnswer3");
         setAnswers(testAnswers);
+    }
+
+    public void TestSetQuestion()
+    {
+        setQuestion("This is a test question.");
     }
 }
