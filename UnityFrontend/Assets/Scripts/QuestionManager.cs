@@ -11,6 +11,7 @@ public class QuestionManager : MonoBehaviour
     [SerializeField] private VerticalLayoutGroup answerButtonsGroup;
     [SerializeField] private GameObject answerButtonPrefab;
     [SerializeField] private Animator animator;
+    [SerializeField] private QuestionGraph questionGraph;
 
     private void OnValidate()
     {
@@ -24,6 +25,13 @@ public class QuestionManager : MonoBehaviour
             Debug.LogError("answerButtonPrefab cannot be null");
         if (animator == null)
             Debug.LogError("animator cannot be null");
+        if (questionGraph == null)
+            Debug.LogError("questionGraph cannot be null");
+    }
+
+    private void Start()
+    {
+        StartCoroutine(SetNextQuestion());
     }
 
     private void setQuestion(string question)
@@ -70,6 +78,7 @@ public class QuestionManager : MonoBehaviour
     public void AnswerPositive()
     {
         Debug.Log("Positive answer");
+        questionGraph.AnswerQuestion(true);
         animator.Play("Fade-out");
         StartCoroutine(SetNextQuestion());
     }
@@ -77,6 +86,7 @@ public class QuestionManager : MonoBehaviour
     public void AnswerNagative()
     {
         Debug.Log("Negative answer");
+        questionGraph.AnswerQuestion(false);
         animator.Play("Fade-out");
         StartCoroutine(SetNextQuestion());
     }
@@ -89,8 +99,9 @@ public class QuestionManager : MonoBehaviour
         // wait for the animation to finish
         yield return new WaitForSeconds(0.3f);
 
-        var question = testSetNextQuestionCounter < 3 ? $"Next Question {testSetNextQuestionCounter}" : null;
-        testSetNextQuestionCounter += 1;
+        //var question = testSetNextQuestionCounter < 3 ? $"Next Question {testSetNextQuestionCounter}" : null;
+        //testSetNextQuestionCounter += 1;
+        var question = questionGraph.GetNextQuestion();
         setQuestion(question);
     }
 
