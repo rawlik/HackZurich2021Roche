@@ -8,25 +8,18 @@ public class SwipeManager : MonoBehaviour
     [SerializeField] public UnityEvent OnSwipeRight;
     [SerializeField] public UnityEvent OnSwipeLeft;
 
-    [SerializeField] private Transform objectToMove;
-
-    private Vector3 objectToMoveInitialPosition;
+    [SerializeField] private TinderLikeAnimation tinderLikeAnimation;
 
     private Vector2 fingerDown;
     private Vector2 fingerUp;
     public bool detectSwipeOnlyAfterRelease = false;
 
-    [SerializeField] private float swipeThreshold = 200f;
+    [SerializeField] private float swipeThreshold = 250f;
 
     private void OnValidate()
     {
-        if (objectToMove == null)
-            Debug.LogError("objectToMove cannot be null");
-    }
-
-    private void Start()
-    {
-        objectToMoveInitialPosition = objectToMove.position;
+        if (tinderLikeAnimation == null)
+            Debug.LogError("tinderLikeAnimation cannot be null");
     }
 
     // Update is called once per frame
@@ -65,7 +58,7 @@ public class SwipeManager : MonoBehaviour
                 fingerDown = touch.position;
                 checkSwipe();
 
-                resetObject();
+                tinderLikeAnimation.ResetPosition();
             }
 
             //Debug.Log($"fingerUp: {fingerUp}");
@@ -77,15 +70,7 @@ public class SwipeManager : MonoBehaviour
     {
         //Debug.Log($"fingerDown.x - fingerUp.x: {fingerDown.x - fingerUp.x}");
 
-        objectToMove.position = new Vector3(
-            objectToMoveInitialPosition.x + fingerDown.x - fingerUp.x,
-            objectToMoveInitialPosition.y,
-            objectToMoveInitialPosition.z);
-    }
-
-    void resetObject()
-    {
-        objectToMove.position = objectToMoveInitialPosition;
+        tinderLikeAnimation.SetRelativeTargetPosition(fingerDown.x - fingerUp.x);
     }
 
     void checkSwipe()
@@ -150,7 +135,9 @@ public class SwipeManager : MonoBehaviour
 
     void onSwipeLeft()
     {
-        //Debug.Log("Swipe Left");
+        Debug.Log("Swipe Left");
+
+        tinderLikeAnimation.MoveOutLeft();
 
         if (OnSwipeLeft != null)
             OnSwipeLeft.Invoke();
@@ -158,7 +145,9 @@ public class SwipeManager : MonoBehaviour
 
     void onSwipeRight()
     {
-        //Debug.Log("Swipe Right");
+        Debug.Log("Swipe Right");
+
+        tinderLikeAnimation.MoveOutRight();
 
         if (OnSwipeRight != null)
             OnSwipeRight.Invoke();
