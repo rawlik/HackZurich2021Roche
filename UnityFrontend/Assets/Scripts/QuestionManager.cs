@@ -44,6 +44,16 @@ public class QuestionManager : MonoBehaviour
         }
     }
 
+    public void AnswerPositive()
+    {
+        Debug.Log("Positive answer");
+    }
+
+    public void AnswerNagative()
+    {
+        Debug.Log("Negative answer");
+    }
+
     public void TestSetAnswers()
     {
         List<string> testAnswers = new List<string>();
