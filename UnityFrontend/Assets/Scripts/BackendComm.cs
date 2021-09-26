@@ -8,7 +8,7 @@ using System.Net.Http;
 
 public class QuestionWithId
 {
-    public int id;
+    public string id;
     public string text;
 }
 
@@ -70,7 +70,8 @@ public class BackendComm : MonoBehaviour
         Debug.Log($"    got response: {responseString}");
 
         var questionWithId = JsonUtility.FromJson<QuestionWithId>(responseString);
-        //Debug.Log($"    question is: {question}");
+        Debug.Log($"    question text is: {questionWithId.text}");
+        Debug.Log($"    question id is: {questionWithId.id}");
         //JsonSerializer.Deserialize();
 
         // {"id":1,"text":"Have you felt ill or unwell?}"

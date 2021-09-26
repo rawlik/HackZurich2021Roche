@@ -44,6 +44,8 @@ public class QuestionManager : MonoBehaviour
 
     private void setQuestion(string question)
     {
+        Debug.Log($"setQuestion with question {question}");
+
         if (question != null)
         {
             Debug.Log($"Setting question: {question}");
@@ -125,7 +127,7 @@ public class QuestionManager : MonoBehaviour
 
         currentQuestion = await backendComm.GetQuestion(patientId);
 
-        setQuestion(currentQuestion.text);
+        setQuestion(currentQuestion.id == "" ? null : currentQuestion.text);
 
         return currentQuestion.text;
     }
