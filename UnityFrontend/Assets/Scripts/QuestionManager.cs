@@ -40,6 +40,7 @@ public class QuestionManager : MonoBehaviour
     {
         setQuestion("Hi!", false);
         await backendComm.StartSession(patientId);
+        animator.Play("Fade-out");
         SetNextQuestion();
     }
 
