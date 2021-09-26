@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -12,6 +13,10 @@ public class QuestionManager : MonoBehaviour
     [SerializeField] private GameObject answerButtonPrefab;
     [SerializeField] private Animator animator;
     [SerializeField] private QuestionGraph questionGraph;
+    [SerializeField] private BackendComm backendComm;
+
+    int patientId = 1;
+    QuestionWithId currentQuestion;
 
     private void OnValidate()
     {
@@ -27,11 +32,14 @@ public class QuestionManager : MonoBehaviour
             Debug.LogError("animator cannot be null");
         if (questionGraph == null)
             Debug.LogError("questionGraph cannot be null");
+        if (backendComm == null)
+            Debug.LogError("backendComm cannot be null");
     }
 
-    private void Start()
+    private async void Start()
     {
-        StartCoroutine(SetNextQuestion());
+        await backendComm.StartSession(patientId);
+        SetNextQuestion();
     }
 
     private void setQuestion(string question)
@@ -75,34 +83,51 @@ public class QuestionManager : MonoBehaviour
         }
     }
 
-    public void AnswerPositive()
+    public async void AnswerPositive()
     {
         Debug.Log("Positive answer");
-        questionGraph.AnswerQuestion(true);
+
+        // internal simulator
+        //questionGraph.AnswerQuestion(true);
+        await backendComm.SendAnswer(patientId, currentQuestion, true);
+
         animator.Play("Fade-out");
-        StartCoroutine(SetNextQuestion());
+        SetNextQuestion();
     }
 
-    public void AnswerNagative()
+    public async void AnswerNagative()
     {
         Debug.Log("Negative answer");
-        questionGraph.AnswerQuestion(false);
+
+        // internal simulator
+        //questionGraph.AnswerQuestion(true);
+        await backendComm.SendAnswer(patientId, currentQuestion, false);
+
         animator.Play("Fade-out");
-        StartCoroutine(SetNextQuestion());
+        SetNextQuestion();
     }
 
     private int testSetNextQuestionCounter = 0;
 
-    public IEnumerator SetNextQuestion()
+    public async Task<string> SetNextQuestion()
     {
         Debug.Log("SetNewQuestion");
+
         // wait for the animation to finish
-        yield return new WaitForSeconds(0.3f);
+        await Task.Delay(300);
+        //yield return new WaitForSeconds(0.3f);
 
         //var question = testSetNextQuestionCounter < 3 ? $"Next Question {testSetNextQuestionCounter}" : null;
         //testSetNextQuestionCounter += 1;
-        var question = questionGraph.GetNextQuestion();
-        setQuestion(question);
+
+        // internal simulator
+        //var question = questionGraph.GetNextQuestion();
+
+        currentQuestion = await backendComm.GetQuestion(patientId);
+
+        setQuestion(currentQuestion.text);
+
+        return currentQuestion.text;
     }
 
     public void TestSetAnswers()
