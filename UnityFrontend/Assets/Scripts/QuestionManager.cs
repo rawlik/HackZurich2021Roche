@@ -38,31 +38,19 @@ public class QuestionManager : MonoBehaviour
 
     private async void Start()
     {
+        setQuestion("Hi!", false);
         await backendComm.StartSession(patientId);
         SetNextQuestion();
     }
 
-    private void setQuestion(string question)
+    private void setQuestion(string question, bool hasAnswers)
     {
         Debug.Log($"setQuestion with question {question}");
 
-        if (question != null)
-        {
-            Debug.Log($"Setting question: {question}");
-            answerButtonsGameObject.SetActive(true);
-            questionText.text = question;
-            animator.Play("Fade-in");
-        }
-        else
-        {
-            setThankYouPanel();
-        }
-    }
+        questionText.text = question;
 
-    private void setThankYouPanel()
-    {
-        answerButtonsGameObject.SetActive(false);
-        questionText.text = "Thank you!";
+        answerButtonsGameObject.SetActive(hasAnswers);
+
         animator.Play("Fade-in");
     }
 
@@ -127,7 +115,7 @@ public class QuestionManager : MonoBehaviour
 
         currentQuestion = await backendComm.GetQuestion(patientId);
 
-        setQuestion(currentQuestion.id == "" ? null : currentQuestion.text);
+        setQuestion(currentQuestion.text, currentQuestion.id != "");
 
         return currentQuestion.text;
     }
@@ -145,12 +133,12 @@ public class QuestionManager : MonoBehaviour
 
     public void TestSetQuestion()
     {
-        setQuestion(testSetQuestionCounter < 3 ? $"This is a test question {testSetQuestionCounter}." : null);
+        setQuestion($"This is a test question {testSetQuestionCounter}.", testSetQuestionCounter < 3);
         testSetQuestionCounter += 1;
     }
 
     public void TestNoMoreQuestions()
     {
-        setQuestion(null);
+        setQuestion("Test no more questions", false);
     }
 }
